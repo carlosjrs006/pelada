@@ -71,6 +71,7 @@ export class JogadoresComponent implements OnInit {
     this.modoEdicao = j;
     this.novoJogador = { nome: j.nome, estrelas: j.estrelas, tipo: j.tipo, numero: j.numero, ativo: j.ativo };
     this.showForm = true;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   excluir(id: number): void {

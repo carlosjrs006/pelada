@@ -1,0 +1,45 @@
+<div class="app-container">
+  <!-- Top Header -->
+  <header class="top-header">
+    <div class="d-flex align-items-center gap-2">
+      <span style="font-size:1.5rem">⚽</span>
+      <h1>Pelada Sábado</h1>
+    </div>
+  </header>
+
+  <!-- Page Content -->
+  <main>
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <ul class="nav justify-content-around">
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">
+          <i class="bi bi-house-fill"></i>
+          <span>Início</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/pelada" routerLinkActive="active">
+          <i class="bi bi-calendar-event-fill"></i>
+          <span>Pelada</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/times" routerLinkActive="active">
+          <i class="bi bi-people-fill"></i>
+          <span>Times</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/jogadores" routerLinkActive="active">
+          <i class="bi bi-person-badge-fill"></i>
+          <span>Jogadores</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+

@@ -1,0 +1,392 @@
+{
+  "jogadores": [
+    {
+      "nome": "Renato",
+      "tipo": "mensalista",
+      "estrelas": 3,
+      "ativo": true,
+      "criadoEm": "2026-03-21T03:05:49.373Z",
+      "id": 1
+    },
+    {
+      "nome": "Yasser",
+      "tipo": "mensalista",
+      "estrelas": 3,
+      "ativo": true,
+      "criadoEm": "2026-03-21T03:05:50.768Z",
+      "id": 2
+    },
+    {
+      "nome": "Edgar",
+      "tipo": "mensalista",
+      "estrelas": 3,
+      "ativo": true,
+      "criadoEm": "2026-03-21T03:05:52.251Z",
+      "id": 3
+    },
+    {
+      "nome": "Leandro",
+      "tipo": "mensalista",
+      "estrelas": 3,
+      "ativo": true,
+      "criadoEm": "2026-03-21T03:05:55.624Z",
+      "id": 4
+    },
+    {
+      "nome": "Karlos Nardelly",
+      "tipo": "mensalista",
+      "estrelas": 3,
+      "ativo": true,
+      "criadoEm": "2026-03-21T03:05:56.838Z",
+      "id": 5
+    },
+    {
+      "nome": "Carlos jr",
+      "tipo": "mensalista",
+      "estrelas": 3,
+      "ativo": true,
+      "criadoEm": "2026-03-21T03:05:58.052Z",
+      "id": 6
+    },
+    {
+      "nome": "Lucas Vilela",
+      "tipo": "mensalista",
+      "estrelas": 3,
+      "ativo": true,
+      "criadoEm": "2026-03-21T03:05:59.806Z",
+      "id": 7
+    },
+    {
+      "nome": "Rafael",
+      "tipo": "mensalista",
+      "estrelas": 3,
+      "ativo": true,
+      "criadoEm": "2026-03-21T03:06:01.181Z",
+      "id": 8
+    },
+    {
+      "nome": "Matheus",
+      "tipo": "mensalista",
+      "estrelas": 3,
+      "ativo": true,
+      "criadoEm": "2026-03-21T03:06:02.304Z",
+      "id": 9
+    },
+    {
+      "nome": "Amarildo Jr",
+      "tipo": "mensalista",
+      "estrelas": 3,
+      "ativo": true,
+      "criadoEm": "2026-03-21T03:06:03.388Z",
+      "id": 10
+    },
+    {
+      "nome": "Vinicius",
+      "tipo": "mensalista",
+      "estrelas": 3,
+      "ativo": true,
+      "criadoEm": "2026-03-21T03:06:04.502Z",
+      "id": 11
+    },
+    {
+      "nome": "Marcos Neves",
+      "tipo": "mensalista",
+      "estrelas": 3,
+      "ativo": true,
+      "criadoEm": "2026-03-21T03:06:05.607Z",
+      "id": 12
+    },
+    {
+      "nome": "Gustavo",
+      "tipo": "mensalista",
+      "estrelas": 3,
+      "ativo": true,
+      "criadoEm": "2026-03-21T03:06:06.742Z",
+      "id": 13
+    },
+    {
+      "nome": "Dedé",
+      "tipo": "convidado",
+      "estrelas": 3,
+      "ativo": true,
+      "criadoEm": "2026-03-21T03:06:07.794Z",
+      "id": 14
+    },
+    {
+      "nome": "João Victor",
+      "tipo": "convidado",
+      "estrelas": 3,
+      "ativo": true,
+      "criadoEm": "2026-03-21T03:06:09.048Z",
+      "id": 15
+    },
+    {
+      "nome": "Richard",
+      "tipo": "convidado",
+      "estrelas": 3,
+      "ativo": true,
+      "criadoEm": "2026-03-21T03:06:10.414Z",
+      "id": 16
+    },
+    {
+      "nome": "Jose",
+      "tipo": "mensalista",
+      "estrelas": 3,
+      "ativo": true,
+      "criadoEm": "2026-03-21T03:16:16.238Z",
+      "id": 17
+    },
+    {
+      "nome": "Matheus Pereira",
+      "tipo": "mensalista",
+      "estrelas": 3,
+      "ativo": true,
+      "criadoEm": "2026-03-21T03:16:17.493Z",
+      "id": 18
+    },
+    {
+      "nome": "Renato",
+      "estrelas": 5,
+      "tipo": "goleiro",
+      "numero": 1,
+      "ativo": true,
+      "criadoEm": "2026-03-21T03:23:44.018Z",
+      "id": 19
+    }
+  ],
+  "peladas": [
+    {
+      "data": "2026-03-28",
+      "local": "ARENA STILLUS",
+      "horario": "08:30",
+      "valorMensalista": 70,
+      "valorDiaria": 25,
+      "valorMulta": 15,
+      "pix": "31984854692",
+      "presencas": [
+        {
+          "jogadorId": 18,
+          "status": "confirmado",
+          "multa": false
+        },
+        {
+          "jogadorId": 17,
+          "status": "confirmado",
+          "multa": false
+        }
+      ],
+      "times": [],
+      "criadoEm": "2026-03-21T03:00:58.606Z",
+      "id": 1
+    },
+    {
+      "data": "2026-03-21",
+      "local": "ARENA STILLUS",
+      "horario": "8:30",
+      "valorMensalista": 70,
+      "valorDiaria": 15,
+      "valorMulta": 15,
+      "pix": "31984854692",
+      "presencas": [
+        {
+          "jogadorId": 1,
+          "status": "atrasado",
+          "multa": true
+        },
+        {
+          "jogadorId": 2,
+          "status": "atrasado",
+          "multa": true
+        },
+        {
+          "jogadorId": 3,
+          "status": "confirmado",
+          "multa": false
+        },
+        {
+          "jogadorId": 5,
+          "status": "confirmado",
+          "multa": false
+        },
+        {
+          "jogadorId": 6,
+          "status": "confirmado",
+          "multa": false
+        },
+        {
+          "jogadorId": 7,
+          "status": "confirmado",
+          "multa": false
+        },
+        {
+          "jogadorId": 8,
+          "status": "confirmado",
+          "multa": false
+        },
+        {
+          "jogadorId": 9,
+          "status": "confirmado",
+          "multa": false
+        },
+        {
+          "jogadorId": 10,
+          "status": "confirmado",
+          "multa": false
+        },
+        {
+          "jogadorId": 11,
+          "status": "confirmado",
+          "multa": false
+        },
+        {
+          "jogadorId": 12,
+          "status": "confirmado",
+          "multa": false
+        },
+        {
+          "jogadorId": 14,
+          "status": "confirmado",
+          "multa": false
+        },
+        {
+          "jogadorId": 15,
+          "status": "confirmado",
+          "multa": false
+        },
+        {
+          "jogadorId": 16,
+          "status": "confirmado",
+          "multa": false
+        },
+        {
+          "jogadorId": 4,
+          "status": "confirmado",
+          "multa": false
+        },
+        {
+          "jogadorId": 13,
+          "status": "confirmado",
+          "multa": false
+        },
+        {
+          "jogadorId": 17,
+          "status": "confirmado",
+          "multa": false
+        },
+        {
+          "jogadorId": 18,
+          "status": "confirmado",
+          "multa": false
+        },
+        {
+          "jogadorId": 19,
+          "status": "confirmado",
+          "multa": false
+        }
+      ],
+      "times": [
+        {
+          "id": 1,
+          "nome": "Time A",
+          "cor": "#e63946",
+          "jogadores": [
+            1,
+            7,
+            8,
+            14,
+            15,
+            18
+          ],
+          "goleiro": 19
+        },
+        {
+          "id": 2,
+          "nome": "Time B",
+          "cor": "#2196F3",
+          "jogadores": [
+            2,
+            6,
+            9,
+            12,
+            16,
+            17
+          ]
+        },
+        {
+          "id": 3,
+          "nome": "Time C",
+          "cor": "#4CAF50",
+          "jogadores": [
+            3,
+            5,
+            10,
+            11,
+            4,
+            13
+          ]
+        }
+      ],
+      "criadoEm": "2026-03-21T03:05:37.819Z",
+      "id": 2
+    },
+    {
+      "data": "2026-03-12",
+      "local": "ARENA STILLUS",
+      "horario": "08:30",
+      "valorMensalista": 70,
+      "valorDiaria": 15,
+      "valorMulta": 15,
+      "pix": "31984854692",
+      "presencas": [
+        {
+          "jogadorId": 3,
+          "status": "pendente",
+          "multa": false
+        },
+        {
+          "jogadorId": 9,
+          "status": "pendente",
+          "multa": false
+        },
+        {
+          "jogadorId": 4,
+          "status": "pendente",
+          "multa": false
+        },
+        {
+          "jogadorId": 2,
+          "status": "pendente",
+          "multa": false
+        },
+        {
+          "jogadorId": 13,
+          "status": "pendente",
+          "multa": false
+        },
+        {
+          "jogadorId": 6,
+          "status": "pendente",
+          "multa": false
+        },
+        {
+          "jogadorId": 7,
+          "status": "pendente",
+          "multa": false
+        },
+        {
+          "jogadorId": 8,
+          "status": "pendente",
+          "multa": false
+        },
+        {
+          "jogadorId": 10,
+          "status": "pendente",
+          "multa": false
+        }
+      ],
+      "times": [],
+      "criadoEm": "2026-03-21T03:27:44.136Z",
+      "id": 3
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+C:\Users\carlos\Documents\pelada-sabado-api\src\main\java\com\peladasabado\api\repository\PeladaRepository.java
+C:\Users\carlos\Documents\pelada-sabado-api\src\main\java\com\peladasabado\api\converter\PresencaListConverter.java
+C:\Users\carlos\Documents\pelada-sabado-api\src\main\java\com\peladasabado\api\config\CorsConfig.java
+C:\Users\carlos\Documents\pelada-sabado-api\src\main\java\com\peladasabado\api\controller\PeladaController.java
+C:\Users\carlos\Documents\pelada-sabado-api\src\main\java\com\peladasabado\api\model\PresencaPelada.java
+C:\Users\carlos\Documents\pelada-sabado-api\src\main\java\com\peladasabado\api\model\Pelada.java
+C:\Users\carlos\Documents\pelada-sabado-api\src\main\java\com\peladasabado\api\service\PeladaService.java
+C:\Users\carlos\Documents\pelada-sabado-api\src\main\java\com\peladasabado\api\model\TimeJogo.java
+C:\Users\carlos\Documents\pelada-sabado-api\src\main\java\com\peladasabado\api\model\Jogador.java
+C:\Users\carlos\Documents\pelada-sabado-api\src\main\java\com\peladasabado\api\service\JogadorService.java
+C:\Users\carlos\Documents\pelada-sabado-api\src\main\java\com\peladasabado\api\controller\JogadorController.java
+C:\Users\carlos\Documents\pelada-sabado-api\src\main\java\com\peladasabado\api\converter\TimeListConverter.java
+C:\Users\carlos\Documents\pelada-sabado-api\src\main\java\com\peladasabado\api\repository\JogadorRepository.java
+C:\Users\carlos\Documents\pelada-sabado-api\src\main\java\com\peladasabado\api\DataInitializer.java
+C:\Users\carlos\Documents\pelada-sabado-api\src\main\java\com\peladasabado\api\PeladaSabadoApplication.java

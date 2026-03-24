@@ -1,0 +1,376 @@
+<div class="page-content fade-in">
+
+  <!-- Header -->
+  <div class="mb-3">
+    <h5 class="text-white mb-0 fw-bold"><i class="bi bi-calendar-event-fill text-warning me-2"></i>Pelada</h5>
+  </div>
+
+  <!-- Tabs -->
+  <div class="d-flex gap-2 mb-4">
+    <button class="btn btn-sm flex-shrink-0"
+            [class.btn-warning]="tabAtiva==='lista'" [class.btn-outline-secondary]="tabAtiva!=='lista'"
+            (click)="tabAtiva='lista'">Lista</button>
+    <button class="btn btn-sm flex-shrink-0"
+            [class.btn-warning]="tabAtiva==='whatsapp'" [class.btn-outline-secondary]="tabAtiva!=='whatsapp'"
+            (click)="tabAtiva='whatsapp'; resetarImport()">
+      <i class="bi bi-whatsapp me-1" style="color:#25D366"></i>Importar Lista
+    </button>
+    <button class="btn btn-sm flex-shrink-0"
+            [class.btn-warning]="tabAtiva==='gols'" [class.btn-outline-secondary]="tabAtiva!=='gols'"
+            (click)="tabAtiva='gols'">
+      <i class="bi bi-award-fill me-1"></i>Gols
+    </button>
+  </div>
+
+  <!-- ============ TAB: LISTA ============ -->
+  <div *ngIf="tabAtiva==='lista'">
+
+    <!-- Seletor de pelada -->
+    <select class="form-select mb-3" *ngIf="peladas.length > 0"
+            [(ngModel)]="peladaSelecionada">
+      <option *ngFor="let p of peladas" [ngValue]="p">
+        {{ p.data | date:'dd/MM/yyyy':'UTC' }} — {{ p.local }}
+      </option>
+    </select>
+
+    <div class="text-center text-white-50 py-5" *ngIf="peladas.length === 0">
+      <i class="bi bi-calendar-x" style="font-size:3rem;"></i>
+      <p class="mt-2">Nenhuma pelada cadastrada</p>
+      <button class="btn btn-warning" (click)="tabAtiva='whatsapp'">Importar Lista do WhatsApp</button>
+    </div>
+
+    <div *ngIf="peladaSelecionada">
+      <!-- Resumo -->
+      <div class="card mb-3">
+        <div class="card-body p-3">
+          <div class="d-flex justify-content-between">
+            <div>
+              <h6 class="text-white fw-bold mb-1">{{ peladaSelecionada.local }}</h6>
+              <p class="text-white-50 mb-0" style="font-size:0.8rem;">
+                {{ peladaSelecionada.data | date:'EEEE, dd/MM/yyyy':'UTC':'pt' }} · {{ peladaSelecionada.horario }}
+              </p>
+            </div>
+            <button class="btn btn-sm btn-outline-light" (click)="gerarWhatsApp()">
+              <i class="bi bi-whatsapp" style="color:#25D366"></i>
+            </button>
+          </div>
+          <div class="d-flex gap-3 mt-3 flex-wrap">
+            <span class="text-success"><i class="bi bi-check-circle-fill me-1"></i>
+              {{ peladaSelecionada.presencas | presencaCount:'confirmado' }} confirm.
+            </span>
+            <span class="text-danger"><i class="bi bi-x-circle-fill me-1"></i>
+              {{ peladaSelecionada.presencas | presencaCount:'ausente' }} ausentes
+            </span>
+            <span class="text-warning" *ngIf="(peladaSelecionada.presencas | presencaCount:'atrasado') > 0">
+              <i class="bi bi-clock-fill me-1"></i>
+              {{ peladaSelecionada.presencas | presencaCount:'atrasado' }} atrasados
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mensalistas -->
+      <div class="card mb-3" *ngIf="mensalistas.length > 0">
+        <div class="card-body p-3">
+          <h6 class="text-warning mb-3"><i class="bi bi-person-check-fill me-2"></i>Mensalistas</h6>
+          <div class="list-item" *ngFor="let j of mensalistas" (click)="toggleStatus(j.id)">
+            <div class="player-avatar" style="width:36px; height:36px; font-size:0.9rem;">
+              {{ j.nome[0] }}
+            </div>
+            <span class="text-white flex-grow-1" style="font-size:0.9rem;">{{ j.nome }}</span>
+            <i class="bi fs-5" [class]="getStatusIcon(j.id)"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Convidados na Pelada -->
+      <div class="card mb-3" *ngIf="convidadosPelada.length > 0">
+        <div class="card-body p-3">
+          <h6 class="text-info mb-3"><i class="bi bi-person-plus-fill me-2"></i>Convidados</h6>
+          <div class="list-item" *ngFor="let j of convidadosPelada" (click)="toggleStatus(j.id)">
+            <div class="player-avatar" style="width:36px; height:36px; font-size:0.9rem; background:#0dcaf0;">
+              {{ j.nome[0] }}
+            </div>
+            <span class="text-white flex-grow-1" style="font-size:0.9rem;">{{ j.nome }}</span>
+            <i class="bi fs-5" [class]="getStatusIcon(j.id)"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Goleiros -->
+      <div class="card mb-3" *ngIf="goleiros.length > 0">
+        <div class="card-body p-3">
+          <h6 class="text-warning mb-3" style="color:#f8b400 !important"><i class="bi bi-shield-fill me-2"></i>Goleiros</h6>
+          <div class="list-item" *ngFor="let j of goleiros" (click)="toggleStatus(j.id)">
+            <div class="player-avatar" style="width:36px; height:36px; font-size:0.9rem; background:#f8b400; color:#000;">
+              {{ j.nome[0] }}
+            </div>
+            <span class="text-white flex-grow-1" style="font-size:0.9rem;">{{ j.nome }}</span>
+            <i class="bi fs-5" [class]="getStatusIcon(j.id)"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-white-50 text-center" style="font-size:0.75rem;">
+        <i class="bi bi-info-circle me-1"></i>
+        Toque: ⚪ pendente → ✅ confirmado → ❌ ausente → 🟡 atrasado (multa)
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ TAB: IMPORTAR WHATSAPP ============ -->
+  <div *ngIf="tabAtiva==='whatsapp'">
+
+    <!-- ESTADO: input — colar o texto -->
+    <div *ngIf="estadoImport==='input'">
+      <div class="card mb-3">
+        <div class="card-body p-3">
+          <h6 class="text-warning mb-2">
+            <i class="bi bi-whatsapp me-2" style="color:#25D366"></i>Criar pelada pela lista do WhatsApp
+          </h6>
+          <p class="text-white-50 mb-3" style="font-size:0.8rem;">
+            Cole a lista completa que você envia no grupo. O app extrai a data, local, valores, PIX e os jogadores automaticamente — sem precisar criar a pelada antes.
+          </p>
+          <textarea class="form-control mb-3" rows="12"
+                    placeholder="Cole aqui a lista da pelada..."
+                    [(ngModel)]="textoWhatsApp"
+                    style="font-size:0.8rem; line-height:1.6;"></textarea>
+          <button class="btn btn-warning w-100 fw-bold" (click)="analisarLista()" [disabled]="!textoWhatsApp.trim()">
+            <i class="bi bi-search me-2"></i>Analisar Lista
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ESTADO: preview — mostrar o que foi detectado -->
+    <div *ngIf="estadoImport==='preview' && resultado">
+
+      <!-- Info da pelada -->
+      <div class="card mb-3">
+        <div class="card-body p-3">
+          <h6 class="text-warning mb-3">
+            <i class="bi bi-calendar-check-fill me-2"></i>Pelada detectada
+          </h6>
+          <div class="d-flex flex-column gap-2" style="font-size:0.85rem;">
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-calendar-event text-warning"></i>
+              <span class="text-white">
+                {{ resultado.dadosPelada.data ? (resultado.dadosPelada.data | date:'dd/MM/yyyy':'UTC') : '⚠️ Data não detectada' }}
+              </span>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-geo-alt-fill text-warning"></i>
+              <span class="text-white">{{ resultado.dadosPelada.local }}</span>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-clock text-warning"></i>
+              <span class="text-white">{{ resultado.dadosPelada.horario }}</span>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-cash-coin text-warning"></i>
+              <span class="text-white-50">
+                Mensalista R${{ resultado.dadosPelada.valorMensalista }} &nbsp;·&nbsp;
+                Diária R${{ resultado.dadosPelada.valorDiaria }} &nbsp;·&nbsp;
+                Multa R${{ resultado.dadosPelada.valorMulta }}
+              </span>
+            </div>
+            <div class="d-flex align-items-center gap-2" *ngIf="resultado.dadosPelada.pix">
+              <i class="bi bi-qr-code text-warning"></i>
+              <span class="text-white">PIX: {{ resultado.dadosPelada.pix }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lista de jogadores detectados -->
+      <div class="card mb-3">
+        <div class="card-body p-3">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="text-white mb-0">
+              <i class="bi bi-people-fill me-2"></i>{{ resultado.jogadoresExtraidos.length }} jogadores
+            </h6>
+            <div class="d-flex gap-2" style="font-size:0.75rem;">
+              <span class="badge bg-success">{{ totalConfirmados }} ✅</span>
+              <span class="badge bg-danger">{{ totalAusentes }} ❌</span>
+              <span class="badge bg-warning text-dark" *ngIf="resultado.nomesNovos.length">
+                {{ resultado.nomesNovos.length }} novos
+              </span>
+            </div>
+          </div>
+
+          <div *ngFor="let j of resultado.jogadoresExtraidos"
+               class="d-flex align-items-center gap-2 py-1 border-bottom border-secondary border-opacity-25">
+            <i class="bi fs-5" [class]="statusIconParse(j.status)"></i>
+            <span class="text-white flex-grow-1" style="font-size:0.85rem;">{{ j.nome }}</span>
+            <span *ngIf="isNomeNovo(j.nome)"
+                  class="badge bg-warning text-dark" style="font-size:0.65rem;">novo</span>
+            <span class="badge" style="font-size:0.65rem;"
+                  [class.bg-secondary]="j.tipo==='mensalista'"
+                  [class.bg-info]="j.tipo==='convidado'"
+                  [class.bg-warning]="j.tipo==='goleiro'">
+              {{ j.tipo }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-secondary flex-shrink-0" (click)="resetarImport()">
+          <i class="bi bi-arrow-left"></i>
+        </button>
+        <button class="btn btn-warning w-100 fw-bold" (click)="confirmarCriacaoPelada()" [disabled]="salvando">
+          <span *ngIf="!salvando"><i class="bi bi-check-circle-fill me-2"></i>Criar / Atualizar Pelada</span>
+          <span *ngIf="salvando"><i class="bi bi-hourglass-split me-2"></i>Salvando...</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ESTADO: concluido -->
+    <div *ngIf="estadoImport==='concluido'">
+
+      <!-- Banner de sucesso -->
+      <div class="alert mb-3" style="background:rgba(25,135,84,0.2); border-color:rgba(25,135,84,0.5); color:#75c99a;">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        Pelada criada/atualizada com sucesso!
+        <button class="btn btn-sm btn-success ms-3" (click)="tabAtiva='lista'">
+          <i class="bi bi-list-check me-1"></i>Ver Lista
+        </button>
+      </div>
+
+      <!-- Nomes novos detectados -->
+      <div class="card" *ngIf="nomesNovos.length > 0">
+        <div class="card-body p-3">
+          <h6 class="text-warning mb-3">
+            <i class="bi bi-person-question-fill me-2"></i>Novos nomes detectados ({{ nomesNovos.length }})
+          </h6>
+          <p class="text-white-50 mb-3" style="font-size:0.8rem;">
+            Os jogadores abaixo não estão cadastrados. Deseja adicionar?
+          </p>
+
+          <div *ngFor="let item of nomesNovos; let i = index">
+
+            <!-- Formulário inline para adicionar -->
+            <div *ngIf="nomeAdicionandoIdx === i"
+                 class="p-3 rounded-3 mb-2" style="background:rgba(255,255,255,0.05);">
+              <div class="fw-bold text-white mb-2">{{ item.nome }}</div>
+              <select class="form-select form-select-sm mb-2" [(ngModel)]="novoNomeTemp.tipo">
+                <option value="mensalista">Mensalista</option>
+                <option value="convidado">Convidado</option>
+                <option value="goleiro">Goleiro</option>
+              </select>
+              <div class="star-rating mb-2" style="font-size:1.4rem; cursor:pointer;">
+                <i *ngFor="let s of [1,2,3,4,5]"
+                   [class]="s <= novoNomeTemp.estrelas ? 'bi bi-star-fill text-warning' : 'bi bi-star text-secondary'"
+                   (click)="novoNomeTemp.estrelas = s"></i>
+              </div>
+              <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-success flex-grow-1" (click)="confirmarNovoJogador()">
+                  <i class="bi bi-check-lg me-1"></i>Salvar
+                </button>
+                <button class="btn btn-sm btn-outline-secondary" (click)="nomeAdicionandoIdx = null">
+                  Cancelar
+                </button>
+              </div>
+            </div>
+
+            <!-- Card do nome -->
+            <div *ngIf="nomeAdicionandoIdx !== i"
+                 class="d-flex align-items-center gap-3 p-2 mb-2 rounded-3"
+                 style="background:rgba(255,255,255,0.05);">
+              <div class="player-avatar" style="width:36px; height:36px; font-size:0.85rem; background:#555;">
+                {{ item.nome[0].toUpperCase() }}
+              </div>
+              <div class="flex-grow-1">
+                <span class="text-white d-block" style="font-size:0.9rem;">{{ item.nome }}</span>
+                <span class="text-white-50" style="font-size:0.75rem;">{{ item.tipo }}</span>
+              </div>
+              <button class="btn btn-sm btn-success" (click)="adicionarNovoNome(item, i)">
+                <i class="bi bi-person-plus-fill"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger" (click)="ignorarNome(i)">
+                <i class="bi bi-x"></i>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Botão nova importação -->
+      <div class="text-center mt-3" *ngIf="nomesNovos.length === 0">
+        <button class="btn btn-outline-secondary btn-sm" (click)="resetarImport()">
+          <i class="bi bi-arrow-clockwise me-1"></i>Importar outra lista
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============ TAB: GOLS & ASSISTÊNCIAS ============ -->
+  <div *ngIf="tabAtiva==='gols'">
+
+    <select class="form-select mb-3" *ngIf="peladas.length > 0" [(ngModel)]="peladaSelecionada">
+      <option *ngFor="let p of peladas" [ngValue]="p">
+        {{ p.data | date:'dd/MM/yyyy':'UTC' }} — {{ p.local }}
+      </option>
+    </select>
+
+    <div class="text-center text-white-50 py-5" *ngIf="peladas.length === 0">
+      <i class="bi bi-calendar-x" style="font-size:3rem;"></i>
+      <p class="mt-2">Nenhuma pelada cadastrada</p>
+    </div>
+
+    <div *ngIf="peladaSelecionada">
+      <div class="card mb-3">
+        <div class="card-body p-3">
+          <h6 class="text-white fw-bold mb-1">{{ peladaSelecionada.local }}</h6>
+          <p class="text-white-50 mb-0" style="font-size:0.8rem;">
+            {{ peladaSelecionada.data | date:'EEEE, dd/MM/yyyy':'UTC':'pt' }} · {{ peladaSelecionada.horario }}
+          </p>
+        </div>
+      </div>
+
+      <div class="card mb-3" *ngIf="jogadoresDaPelada.length > 0">
+        <div class="card-body p-3">
+          <h6 class="text-warning mb-3"><i class="bi bi-award-fill me-2"></i>Gols & Assistências</h6>
+
+          <div *ngFor="let j of jogadoresDaPelada"
+               class="d-flex align-items-center gap-2 py-2 border-bottom border-secondary border-opacity-25">
+            <div class="player-avatar" style="width:36px; height:36px; font-size:0.9rem;">{{ j.nome[0] }}</div>
+            <span class="text-white flex-grow-1" style="font-size:0.9rem;">{{ j.nome }}</span>
+
+            <!-- Gols -->
+            <div class="d-flex align-items-center gap-1">
+              <span style="font-size:0.85rem;">⚽</span>
+              <button class="btn btn-sm btn-outline-secondary p-0" style="width:26px;height:26px;line-height:1;"
+                      (click)="ajustarEstat(j.id,'gols',-1)">−</button>
+              <span class="text-white fw-bold" style="min-width:22px;text-align:center;font-size:0.9rem;">{{ getGols(j.id) }}</span>
+              <button class="btn btn-sm btn-outline-warning p-0" style="width:26px;height:26px;line-height:1;"
+                      (click)="ajustarEstat(j.id,'gols',1)">+</button>
+            </div>
+
+            <!-- Assistências -->
+            <div class="d-flex align-items-center gap-1 ms-2">
+              <span style="font-size:0.85rem;">🎯</span>
+              <button class="btn btn-sm btn-outline-secondary p-0" style="width:26px;height:26px;line-height:1;"
+                      (click)="ajustarEstat(j.id,'assistencias',-1)">−</button>
+              <span class="text-white fw-bold" style="min-width:22px;text-align:center;font-size:0.9rem;">{{ getAssistencias(j.id) }}</span>
+              <button class="btn btn-sm btn-outline-info p-0" style="width:26px;height:26px;line-height:1;"
+                      (click)="ajustarEstat(j.id,'assistencias',1)">+</button>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-4 mt-3" style="font-size:0.8rem;">
+            <span class="text-white-50">⚽ <strong class="text-warning">{{ totalGolsPelada }}</strong> gols</span>
+            <span class="text-white-50">🎯 <strong class="text-info">{{ totalAssistenciasPelada }}</strong> assist.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center text-white-50 py-3" *ngIf="jogadoresDaPelada.length === 0">
+        <p>Nenhum jogador nesta pelada</p>
+      </div>
+    </div>
+  </div>
+
+</div>

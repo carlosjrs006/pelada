@@ -182,39 +182,38 @@ export class PeladaService {
     const confirmados = pelada.presencas
       .filter(p => p.status === 'confirmado' || p.status === 'atrasado')
       .map(p => jogadores.find(j => j.id === p.jogadorId))
-      .filter((j): j is Jogador => !!j && j.tipo !== 'goleiro')
-      .sort((a, b) => b.estrelas - a.estrelas);
+      .filter((j): j is Jogador => !!j && j.tipo !== 'goleiro');
 
     const qtdTimes = Math.floor(confirmados.length / porTime);
     if (qtdTimes < 2) return of({ ...pelada, times: [] });
+
+    // Embaralha jogadores dentro do mesmo grupo de estrelas → aleatoriedade sem perder equilíbrio
+    const paraDistribuir = this.shuffleBalanceado(confirmados);
+
+    const reservasQt = confirmados.length % porTime;
+    const temReservas = reservasQt > 0;
+
+    // Snake draft incluindo os reservas como um slot extra com capacidade limitada
+    // Assim os reservas recebem picks de todas as rodadas, não apenas os "sobras" do fim
+    const slotMax = [...Array(qtdTimes).fill(porTime), ...(temReservas ? [reservasQt] : [])];
+    const ordemPicks = this.gerarOrdemSnake(slotMax);
+    const slots: number[][] = Array.from({ length: slotMax.length }, () => []);
+    paraDistribuir.forEach((j, i) => slots[ordemPicks[i]].push(j.id));
 
     const cores = ['#e63946', '#2196F3', '#4CAF50', '#FF9800', '#9C27B0'];
     const times: Time[] = Array.from({ length: qtdTimes }, (_, i) => ({
       id: i + 1,
       nome: `Time ${String.fromCharCode(65 + i)}`,
       cor: cores[i] || '#607D8B',
-      jogadores: []
+      jogadores: slots[i]
     }));
 
-    // Somente os jogadores que cabem nos times principais (porTime * qtdTimes)
-    const paraDistribuir = confirmados.slice(0, qtdTimes * porTime);
-    const reservas = confirmados.slice(qtdTimes * porTime);
-
-    // Snake draft para balancear estrelas entre os times
-    let esquerda = true;
-    for (let i = 0; i < paraDistribuir.length; i++) {
-      if (i > 0 && i % qtdTimes === 0) esquerda = !esquerda;
-      const idx = esquerda ? i % qtdTimes : qtdTimes - 1 - (i % qtdTimes);
-      if (times[idx]) times[idx].jogadores.push(paraDistribuir[i].id);
-    }
-
-    // Time de reservas (sobra)
-    if (reservas.length > 0) {
+    if (temReservas && slots[qtdTimes].length > 0) {
       times.push({
         id: qtdTimes + 1,
         nome: 'Reservas',
         cor: '#607D8B',
-        jogadores: reservas.map(j => j.id)
+        jogadores: slots[qtdTimes]
       });
     }
 
@@ -227,6 +226,54 @@ export class PeladaService {
 
     const peladaAtualizada = { ...pelada, times };
     return this.atualizar(peladaAtualizada);
+  }
+
+  /** Embaralha (Fisher-Yates) dentro de cada grupo de mesma estrela, mantendo ordem desc entre grupos */
+  private shuffleBalanceado(jogadores: Jogador[]): Jogador[] {
+    const grupos = new Map<number, Jogador[]>();
+    for (const j of jogadores) {
+      if (!grupos.has(j.estrelas)) grupos.set(j.estrelas, []);
+      grupos.get(j.estrelas)!.push(j);
+    }
+    const resultado: Jogador[] = [];
+    const ratings = Array.from(grupos.keys()).sort((a, b) => b - a);
+    for (const r of ratings) {
+      const g = grupos.get(r)!;
+      for (let i = g.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [g[i], g[j]] = [g[j], g[i]];
+      }
+      resultado.push(...g);
+    }
+    return resultado;
+  }
+
+  /**
+   * Gera a sequência de índices de slot para o snake draft.
+   * slotMax define a capacidade de cada slot; slots cheios são pulados.
+   * Exemplo: slotMax=[6,6,6,3] → picks para 21 jogadores com reservas equilibrados.
+   */
+  private gerarOrdemSnake(slotMax: number[]): number[] {
+    const remaining = [...slotMax];
+    const total = slotMax.reduce((a, b) => a + b, 0);
+    const order: number[] = [];
+    let forward = true;
+
+    while (order.length < total) {
+      const indices = forward
+        ? Array.from({ length: remaining.length }, (_, i) => i)
+        : Array.from({ length: remaining.length }, (_, i) => remaining.length - 1 - i);
+
+      for (const i of indices) {
+        if (remaining[i] > 0) {
+          order.push(i);
+          remaining[i]--;
+        }
+      }
+      forward = !forward;
+    }
+
+    return order;
   }
 
   gerarTextoWhatsApp(pelada: Pelada, jogadores: Jogador[]): string {

@@ -24,7 +24,7 @@
   <ng-container *ngIf="tabAtiva === 'mensalidades'">
 
     <div class="d-flex align-items-center justify-content-between card p-2 mb-3">
-      <button class="btn btn-sm btn-outline-secondary" (click)="mesAnterior()">
+      <button class="btn btn-sm btn-outline-secondary" (click)="mesAnterior()" [disabled]="mesAtual <= mesMinimo">
         <i class="bi bi-chevron-left"></i>
       </button>
       <span class="text-white fw-semibold text-capitalize">{{ getMesLabel() }}</span>

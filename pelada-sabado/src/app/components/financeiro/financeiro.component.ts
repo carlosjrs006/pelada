@@ -19,6 +19,7 @@ export class FinanceiroComponent implements OnInit {
   salvando = false;
 
   // Mensalidades
+  readonly mesMinimo = '2026-01';
   mesAtual = '';
   mensalidades: Pagamento[] = [];
   carregandoMens = false;
@@ -99,6 +100,7 @@ export class FinanceiroComponent implements OnInit {
   }
 
   mesAnterior(): void {
+    if (this.mesAtual <= this.mesMinimo) return;
     const [ano, mes] = this.mesAtual.split('-').map(Number);
     const d = new Date(ano, mes - 2);
     this.mesAtual = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
@@ -178,7 +180,9 @@ export class FinanceiroComponent implements OnInit {
 
   // ── Acumulado ──────────────────────────────────────────────
 
-  get todosMensalidades(): Pagamento[] { return this.todos.filter(p => p.tipo === 'mensalidade'); }
+  get todosMensalidades(): Pagamento[] {
+    return this.todos.filter(p => p.tipo === 'mensalidade' && (p.mesAno ?? '') >= this.mesMinimo);
+  }
   get todosDiarias(): Pagamento[]      { return this.todos.filter(p => p.tipo === 'diaria'); }
 
   get acumTotalRecebido(): number { return this.getTotalRecebido(this.todos); }

@@ -32,7 +32,12 @@ public class PagamentoService {
      * Retorna (e gera se necessário) mensalidades do mês para todos os mensalistas/goleiros ativos.
      * Valor buscado da primeira pelada do mês; fallback 70.
      */
+    private static final String MES_MINIMO = "2026-01";
+
     public List<Pagamento> gerarOuBuscarMensalidades(String mesAno) {
+        if (mesAno.compareTo(MES_MINIMO) < 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Mensalidades disponíveis apenas a partir de Janeiro de 2026");
+        }
         int valorMensalista = 70;
         List<Pelada> peladasMes = peladaRepository.findByDataStartingWith(mesAno);
         if (!peladasMes.isEmpty() && peladasMes.get(0).getValorMensalista() != null) {
@@ -129,6 +134,13 @@ public class PagamentoService {
     }
 
     public List<Pagamento> getAll() {
-        return pagamentoRepository.findAll();
+        return pagamentoRepository.findAll().stream()
+                .filter(p -> {
+                    if ("mensalidade".equals(p.getTipo()) && p.getMesAno() != null) {
+                        return p.getMesAno().compareTo(MES_MINIMO) >= 0;
+                    }
+                    return true;
+                })
+                .collect(Collectors.toList());
     }
 }

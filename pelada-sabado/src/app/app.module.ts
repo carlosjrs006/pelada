@@ -10,6 +10,7 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { JogadoresComponent } from './components/jogadores/jogadores.component';
 import { PeladaComponent } from './components/pelada/pelada.component';
 import { TimesComponent } from './components/times/times.component';
+import { FinanceiroComponent } from './components/financeiro/financeiro.component';
 import { PresencaCountPipe } from './pipes/presenca-count.pipe';
 
 @NgModule({
@@ -19,6 +20,7 @@ import { PresencaCountPipe } from './pipes/presenca-count.pipe';
     JogadoresComponent,
     PeladaComponent,
     TimesComponent,
+    FinanceiroComponent,
     PresencaCountPipe,
   ],
   imports: [

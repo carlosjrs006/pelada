@@ -10,4 +10,5 @@ import java.util.Optional;
 @Repository
 public interface PeladaRepository extends JpaRepository<Pelada, Long> {
     Optional<Pelada> findByData(String data);
+    List<Pelada> findByDataStartingWith(String prefix);
 }

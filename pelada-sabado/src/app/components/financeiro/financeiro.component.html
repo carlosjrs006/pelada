@@ -1,0 +1,283 @@
+﻿<div class="page-content fade-in">
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="text-white mb-0 fw-bold">
+      <i class="bi bi-cash-coin text-warning me-2"></i>Financeiro
+    </h5>
+    <span *ngIf="salvando" class="badge bg-secondary">Salvando...</span>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tab-pills mb-3">
+    <button class="tab-pill" [class.active]="tabAtiva === 'mensalidades'" (click)="setTab('mensalidades')">
+      <i class="bi bi-calendar-check me-1"></i>Mensalidades
+    </button>
+    <button class="tab-pill" [class.active]="tabAtiva === 'diarias'" (click)="setTab('diarias')">
+      <i class="bi bi-person-plus me-1"></i>Diarias
+    </button>
+    <button class="tab-pill" [class.active]="tabAtiva === 'acumulado'" (click)="setTab('acumulado')">
+      <i class="bi bi-graph-up me-1"></i>Total
+    </button>
+  </div>
+
+  <!-- MENSALIDADES -->
+  <ng-container *ngIf="tabAtiva === 'mensalidades'">
+
+    <div class="d-flex align-items-center justify-content-between card p-2 mb-3">
+      <button class="btn btn-sm btn-outline-secondary" (click)="mesAnterior()">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+      <span class="text-white fw-semibold text-capitalize">{{ getMesLabel() }}</span>
+      <button class="btn btn-sm btn-outline-secondary" (click)="mesPosterior()">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+
+    <div class="text-center text-white-50 py-4" *ngIf="carregandoMens">
+      <div class="spinner-border spinner-border-sm text-warning" role="status"></div>
+      <p class="mt-2 mb-0">Carregando...</p>
+    </div>
+
+    <ng-container *ngIf="!carregandoMens && mensalidades.length > 0">
+      <div class="row g-2 mb-3">
+        <div class="col-4">
+          <div class="card text-center p-2">
+            <div class="text-white-50" style="font-size:0.6rem;text-transform:uppercase;">Esperado</div>
+            <div class="text-white fw-bold" style="font-size:0.95rem;">R$ {{ getTotalEsperado(mensalidades) | number:'1.0-0' }}</div>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="card text-center p-2" style="border-color:#4CAF50!important">
+            <div class="text-white-50" style="font-size:0.6rem;text-transform:uppercase;">Recebido</div>
+            <div class="fw-bold" style="color:#4CAF50;font-size:0.95rem;">R$ {{ getTotalRecebido(mensalidades) | number:'1.0-0' }}</div>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="card text-center p-2" style="border-color:#e63946!important">
+            <div class="text-white-50" style="font-size:0.6rem;text-transform:uppercase;">Pendente</div>
+            <div class="fw-bold" style="color:#e63946;font-size:0.95rem;">R$ {{ getTotalPendente(mensalidades) | number:'1.0-0' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-3 p-3">
+        <div class="d-flex justify-content-between mb-1">
+          <span class="text-white-50" style="font-size:0.8rem;">{{ countPagos(mensalidades) }} / {{ mensalidades.length }} pagos</span>
+          <span class="fw-bold" style="font-size:0.8rem;color:#4CAF50;">{{ getPercentual(mensalidades) }}%</span>
+        </div>
+        <div class="progress" style="height:8px;background:rgba(255,255,255,0.1)">
+          <div class="progress-bar bg-success" [style.width]="getPercentual(mensalidades) + '%'"></div>
+        </div>
+      </div>
+
+      <div class="d-flex flex-column gap-2">
+        <div *ngFor="let pag of mensalidades" class="pagamento-item" [class.pago]="pag.pago" (click)="togglePagamento(pag)">
+          <div class="d-flex align-items-center gap-3">
+            <div class="avatar" [class.avatar-pago]="pag.pago">
+              <span *ngIf="!pag.pago">{{ getIniciais(getJogador(pag.jogadorId)?.nome || '?') }}</span>
+              <i class="bi bi-check-lg" *ngIf="pag.pago"></i>
+            </div>
+            <div class="flex-grow-1 overflow-hidden">
+              <div class="text-white fw-semibold text-truncate">{{ getJogador(pag.jogadorId)?.nome }}</div>
+              <div style="font-size:0.75rem" [class.text-success]="pag.pago" [class.text-white-50]="!pag.pago">
+                <i class="bi bi-shield-fill me-1" *ngIf="getJogador(pag.jogadorId)?.tipo === 'goleiro'"></i>
+                {{ getJogador(pag.jogadorId)?.tipo === 'goleiro' ? 'Goleiro' : 'Mensalista' }}
+                - R$ {{ pag.valor | number:'1.2-2' }}
+                <span *ngIf="pag.dataPagamento"> - pago {{ pag.dataPagamento | date:'dd/MM':'UTC' }}</span>
+              </div>
+            </div>
+            <div class="status-badge" [class.status-pago]="pag.pago" [class.status-pendente]="!pag.pago">
+              {{ pag.pago ? 'Pago' : 'Pendente' }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <div *ngIf="!carregandoMens && mensalidades.length === 0" class="text-center text-white-50 py-4">
+      <i class="bi bi-people" style="font-size:2.5rem;"></i>
+      <p class="mt-2">Nenhum mensalista ativo</p>
+    </div>
+
+  </ng-container>
+
+  <!-- DIARIAS -->
+  <ng-container *ngIf="tabAtiva === 'diarias'">
+
+    <select class="form-select mb-3" *ngIf="peladas.length > 0"
+            (change)="selecionarPelada($any($event.target).selectedIndex)">
+      <option *ngFor="let p of peladas">{{ p.data | date:'dd/MM/yyyy':'UTC' }} -- {{ p.local }}</option>
+    </select>
+
+    <div *ngIf="peladaSelecionada" class="d-flex align-items-center gap-2 mb-3">
+      <span class="text-white-50" style="font-size:0.85rem;">Valor da diária:</span>
+      <div class="input-group input-group-sm" style="width:130px;">
+        <span class="input-group-text">R$</span>
+        <input type="number" class="form-control" [(ngModel)]="valorDiariaCampo" min="1" step="1">
+      </div>
+      <button class="btn btn-sm btn-warning fw-bold" (click)="atualizarValorDiaria()" [disabled]="salvando">
+        Atualizar
+      </button>
+    </div>
+
+    <div class="text-center text-white-50 py-4" *ngIf="carregandoDiarias">
+      <div class="spinner-border spinner-border-sm text-warning" role="status"></div>
+      <p class="mt-2 mb-0">Carregando...</p>
+    </div>
+
+    <ng-container *ngIf="!carregandoDiarias && diarias.length > 0">
+      <div class="row g-2 mb-3">
+        <div class="col-4">
+          <div class="card text-center p-2">
+            <div class="text-white-50" style="font-size:0.6rem;text-transform:uppercase;">Esperado</div>
+            <div class="text-white fw-bold" style="font-size:0.95rem;">R$ {{ getTotalEsperado(diarias) | number:'1.0-0' }}</div>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="card text-center p-2" style="border-color:#4CAF50!important">
+            <div class="text-white-50" style="font-size:0.6rem;text-transform:uppercase;">Recebido</div>
+            <div class="fw-bold" style="color:#4CAF50;font-size:0.95rem;">R$ {{ getTotalRecebido(diarias) | number:'1.0-0' }}</div>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="card text-center p-2" style="border-color:#e63946!important">
+            <div class="text-white-50" style="font-size:0.6rem;text-transform:uppercase;">Pendente</div>
+            <div class="fw-bold" style="color:#e63946;font-size:0.95rem;">R$ {{ getTotalPendente(diarias) | number:'1.0-0' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-3 p-3">
+        <div class="d-flex justify-content-between mb-1">
+          <span class="text-white-50" style="font-size:0.8rem;">{{ countPagos(diarias) }} / {{ diarias.length }} pagos</span>
+          <span class="fw-bold" style="font-size:0.8rem;color:#4CAF50;">{{ getPercentual(diarias) }}%</span>
+        </div>
+        <div class="progress" style="height:8px;background:rgba(255,255,255,0.1)">
+          <div class="progress-bar bg-success" [style.width]="getPercentual(diarias) + '%'"></div>
+        </div>
+      </div>
+
+      <div class="d-flex flex-column gap-2">
+        <div *ngFor="let pag of diarias" class="pagamento-item" [class.pago]="pag.pago" (click)="togglePagamento(pag)">
+          <div class="d-flex align-items-center gap-3">
+            <div class="avatar avatar-convidado" [class.avatar-pago]="pag.pago">
+              <span *ngIf="!pag.pago">{{ getIniciais(getJogador(pag.jogadorId)?.nome || '?') }}</span>
+              <i class="bi bi-check-lg" *ngIf="pag.pago"></i>
+            </div>
+            <div class="flex-grow-1 overflow-hidden">
+              <div class="text-white fw-semibold text-truncate">{{ getJogador(pag.jogadorId)?.nome }}</div>
+              <div style="font-size:0.75rem" [class.text-success]="pag.pago" [class.text-white-50]="!pag.pago">
+                Convidado - R$ {{ pag.valor | number:'1.2-2' }}
+                <span *ngIf="pag.dataPagamento"> - pago {{ pag.dataPagamento | date:'dd/MM':'UTC' }}</span>
+              </div>
+            </div>
+            <div class="status-badge" [class.status-pago]="pag.pago" [class.status-pendente]="!pag.pago">
+              {{ pag.pago ? 'Pago' : 'Pendente' }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <div *ngIf="!carregandoDiarias && diarias.length === 0 && peladaSelecionada" class="text-center text-white-50 py-4">
+      <i class="bi bi-person-plus" style="font-size:2.5rem;"></i>
+      <p class="mt-2">Nenhum convidado confirmado nesta pelada</p>
+    </div>
+
+    <div *ngIf="peladas.length === 0" class="text-center text-white-50 py-4">
+      <i class="bi bi-calendar-x" style="font-size:2.5rem;"></i>
+      <p class="mt-2">Nenhuma pelada cadastrada</p>
+    </div>
+
+  </ng-container>
+
+
+  <!-- ACUMULADO -->
+  <ng-container *ngIf="tabAtiva === 'acumulado'">
+
+    <div class="text-center text-white-50 py-4" *ngIf="carregandoAcumulado">
+      <div class="spinner-border spinner-border-sm text-warning" role="status"></div>
+      <p class="mt-2 mb-0">Carregando...</p>
+    </div>
+
+    <ng-container *ngIf="!carregandoAcumulado">
+
+      <!-- Card total geral -->
+      <div class="card mb-3 p-3" style="border-color:#ffc107!important; background:rgba(255,193,7,0.06)!important;">
+        <div class="text-center mb-2">
+          <div class="text-white-50" style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;">Capital Total Recebido</div>
+          <div class="fw-bold mt-1" style="font-size:2rem;color:#ffc107;">R${{ acumTotalRecebido | number:'1.0-0' }}</div>
+        </div>
+        <div class="row g-2 mt-1">
+          <div class="col-6">
+            <div class="text-center p-2 rounded-3" style="background:rgba(255,255,255,0.05)">
+              <div class="text-white-50" style="font-size:0.65rem;text-transform:uppercase;">Mensalidades</div>
+              <div class="fw-bold" style="color:#4CAF50;">R${{ acumMensRecebido | number:'1.0-0' }}</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="text-center p-2 rounded-3" style="background:rgba(255,255,255,0.05)">
+              <div class="text-white-50" style="font-size:0.65rem;text-transform:uppercase;">Diarias</div>
+              <div class="fw-bold" style="color:#2196F3;">R${{ acumDiarRecebido | number:'1.0-0' }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mensalidades por mes -->
+      <div *ngIf="mensalidadesPorMes.length > 0" class="mb-3">
+        <h6 class="text-warning mb-2" style="font-size:0.8rem;text-transform:uppercase;letter-spacing:1px;">
+          <i class="bi bi-calendar-check me-1"></i>Mensalidades por mes
+        </h6>
+        <div class="d-flex flex-column gap-2">
+          <div *ngFor="let m of mensalidadesPorMes" class="card p-3">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="text-white fw-semibold text-capitalize" style="font-size:0.9rem;">{{ m.label }}</span>
+              <span class="fw-bold" style="color:#4CAF50;">R${{ m.recebido | number:'1.0-0' }}</span>
+            </div>
+            <div class="progress mb-1" style="height:5px;background:rgba(255,255,255,0.1)">
+              <div class="progress-bar bg-success" [style.width]="(m.esperado > 0 ? (m.recebido / m.esperado * 100) : 0) + '%'"></div>
+            </div>
+            <div class="d-flex justify-content-between">
+              <span class="text-white-50" style="font-size:0.72rem;">Esperado R${{ m.esperado | number:'1.0-0' }}</span>
+              <span style="font-size:0.72rem;color:#e63946;">Pendente R${{ (m.esperado - m.recebido) | number:'1.0-0' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Diarias por pelada -->
+      <div *ngIf="diariasPorPelada.length > 0" class="mb-3">
+        <h6 class="text-info mb-2" style="font-size:0.8rem;text-transform:uppercase;letter-spacing:1px;">
+          <i class="bi bi-person-plus me-1"></i>Diarias por pelada
+        </h6>
+        <div class="d-flex flex-column gap-2">
+          <div *ngFor="let d of diariasPorPelada" class="card p-3">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <div>
+                <span class="text-white fw-semibold" style="font-size:0.9rem;">{{ d.data }}</span>
+                <span class="text-white-50 ms-2" style="font-size:0.75rem;">{{ d.local }}</span>
+              </div>
+              <span class="fw-bold" style="color:#2196F3;">R${{ d.recebido | number:'1.0-0' }}</span>
+            </div>
+            <div class="progress mb-1" style="height:5px;background:rgba(255,255,255,0.1)">
+              <div class="progress-bar" style="background:#2196F3;" [style.width]="(d.esperado > 0 ? (d.recebido / d.esperado * 100) : 0) + '%'"></div>
+            </div>
+            <div class="d-flex justify-content-between">
+              <span class="text-white-50" style="font-size:0.72rem;">Esperado R${{ d.esperado | number:'1.0-0' }}</span>
+              <span style="font-size:0.72rem;color:#e63946;">Pendente R${{ (d.esperado - d.recebido) | number:'1.0-0' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="todos.length === 0" class="text-center text-white-50 py-4">
+        <i class="bi bi-graph-up" style="font-size:2.5rem;"></i>
+        <p class="mt-2">Nenhum registro financeiro ainda.</p>
+      </div>
+
+    </ng-container>
+
+  </ng-container>
+
+</div>

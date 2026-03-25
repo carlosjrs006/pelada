@@ -15,6 +15,7 @@ export interface PresencaPelada {
   jogadorId: number;
   status: StatusJogo;
   multa: boolean;
+  pagou?: boolean;
   gols?: number;
   assistencias?: number;
 }
@@ -42,6 +43,19 @@ export interface Time {
   vitorias?: number;
   empates?: number;
   derrotas?: number;
+}
+
+export interface Pagamento {
+  id: number;
+  jogadorId: number;
+  tipo: 'mensalidade' | 'diaria';
+  referencia: string;
+  mesAno?: string;
+  peladaId?: number;
+  valor: number;
+  pago: boolean;
+  dataPagamento?: string;
+  criadoEm: string;
 }
 
 export interface NovoNomeDetectado {

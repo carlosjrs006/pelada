@@ -27,15 +27,21 @@ export class JogadorService {
     return this.api.delete<void>('jogadores', id);
   }
 
+  private normalizar(nome: string): string {
+    return nome.trim().toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+  }
+
   findByNome(nome: string, jogadores: Jogador[]): Jogador | undefined {
-    const n = nome.trim().toLowerCase();
-    return jogadores.find(j => j.nome.toLowerCase() === n);
+    const n = this.normalizar(nome);
+    return jogadores.find(j => this.normalizar(j.nome) === n);
   }
 
   detectarNovosNomes(nomes: string[], jogadores: Jogador[]): string[] {
     return nomes.filter(nome => {
-      const n = nome.trim().toLowerCase();
-      return n.length > 0 && !jogadores.some(j => j.nome.toLowerCase() === n);
+      const n = this.normalizar(nome);
+      return n.length > 0 && !jogadores.some(j => this.normalizar(j.nome) === n);
     });
   }
 }

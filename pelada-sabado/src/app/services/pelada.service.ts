@@ -132,8 +132,11 @@ export class PeladaService {
     }
 
     // Nomes não cadastrados
+    const normalizar = (s: string) =>
+      s.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
     const nomesNovos = jogadoresExtraidos
-      .filter(({ nome }) => !jogadores.some(j => j.nome.toLowerCase() === nome.toLowerCase()))
+      .filter(({ nome }) => !jogadores.some(j => normalizar(j.nome) === normalizar(nome)))
       .map(({ nome, tipo }) => ({ nome, tipo }));
 
     return {

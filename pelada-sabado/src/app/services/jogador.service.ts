@@ -28,9 +28,13 @@ export class JogadorService {
   }
 
   private normalizar(nome: string): string {
-    return nome.trim().toLowerCase()
+    return nome
+      .replace(/[\u200B-\u200D\uFEFF\u00AD]/g, '') // remove zero-width e soft-hyphen do WhatsApp
       .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '');
+      .replace(/[\u0300-\u036f]/g, '')              // remove acentos
+      .toLowerCase()
+      .replace(/\s+/g, ' ')                         // colapsa espaços duplos/tabs
+      .trim();
   }
 
   findByNome(nome: string, jogadores: Jogador[]): Jogador | undefined {

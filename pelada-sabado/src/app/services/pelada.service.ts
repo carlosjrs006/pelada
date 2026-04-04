@@ -121,11 +121,13 @@ export class PeladaService {
       if (parte.includes('✅')) status = 'confirmado';
       else if (parte.includes('❌')) status = 'ausente';
 
-      // Limpar nome (remove chars invisíveis do WhatsApp antes de trim)
+      // Limpar nome com a mesma normalização usada na comparação
       const nome = parte
         .replace(/\(convidado\)/gi, '')
         .replace(/[✅❌]/g, '')
-        .replace(/[\u200B-\u200D\uFEFF\u00AD]/g, '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^\w\s]/g, '')
         .replace(/\s+/g, ' ')
         .trim();
       if (!nome) continue; // slot vazio
@@ -138,9 +140,12 @@ export class PeladaService {
 
     // Nomes não cadastrados
     const normalizar = (s: string) =>
-      s.replace(/[\u200B-\u200D\uFEFF\u00AD]/g, '')
-        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-        .toLowerCase().replace(/\s+/g, ' ').trim();
+      s.normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^\w\s]/g, '')
+        .toLowerCase()
+        .replace(/\s+/g, ' ')
+        .trim();
 
     const nomesNovos = jogadoresExtraidos
       .filter(({ nome }) => !jogadores.some(j => normalizar(j.nome) === normalizar(nome)))

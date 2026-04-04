@@ -29,11 +29,11 @@ export class JogadorService {
 
   private normalizar(nome: string): string {
     return nome
-      .replace(/[\u200B-\u200D\uFEFF\u00AD]/g, '') // remove zero-width e soft-hyphen do WhatsApp
       .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')              // remove acentos
+      .replace(/[\u0300-\u036f]/g, '')  // remove acentos
+      .replace(/[^\w\s]/g, '')           // remove qualquer char invisível/especial
       .toLowerCase()
-      .replace(/\s+/g, ' ')                         // colapsa espaços duplos/tabs
+      .replace(/\s+/g, ' ')              // colapsa espaços
       .trim();
   }
 
